@@ -1,0 +1,35 @@
+version: 2.1
+
+
+jobs:
+
+  save_my_text:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          command: | 
+            echo "This is my saved text" > ~/output.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - output.txt  
+
+  print-output-file:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          command: |
+            cat ~/output.txt        
+
+workflows:
+  welcome-workflow:
+    jobs:
+      - save_my_text
+      - print-output-file:
+          requires:
+            - save_my_text
